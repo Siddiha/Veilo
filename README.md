@@ -1,4 +1,4 @@
-# 🫁 Lung Cancer AI
+# 🫁 AI-Powered Lung Cancer Detection System
 
 This repository contains a full-stack AI application for chest X-ray analysis:
 
