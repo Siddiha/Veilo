@@ -9,7 +9,6 @@ const ProfessionalCancerDetectionApp = () => {
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('upload');
   const [scrollY, setScrollY] = useState(0);
-  // Key updates for your React frontend to handle realistic results
   const [detectionStats, setDetectionStats] = useState(null);
   const fileInputRef = useRef(null);
   const resultsRef = useRef(null);
@@ -48,7 +47,6 @@ const ProfessionalCancerDetectionApp = () => {
       const response = await fetch('http://localhost:5000/api/analyze', {
         method: 'POST',
         body: formData,
-        // Add timeout for better UX
         signal: AbortSignal.timeout(30000)
       });
 
@@ -60,7 +58,6 @@ const ProfessionalCancerDetectionApp = () => {
       const data = await response.json();
       setResults(data);
       
-      // Set detection statistics for better display
       setDetectionStats({
         totalDetections: data.detection_count || 0,
         highConfidence: (data.cancer_locations || []).filter(loc => loc.confidence > 0.8).length,
@@ -117,7 +114,6 @@ const ProfessionalCancerDetectionApp = () => {
     }
   };
 
-  // Add this helper function to format confidence levels
   const getConfidenceColor = (confidence) => {
     if (confidence > 0.8) return 'text-red-400';
     if (confidence > 0.65) return 'text-orange-400';
@@ -125,7 +121,273 @@ const ProfessionalCancerDetectionApp = () => {
     return 'text-gray-400';
   };
 
-  // Update the main result display section to handle normal cases better
+  // Function to download detailed report as PDF-style HTML
+  const downloadReport = () => {
+    if (!results) return;
+    
+    const reportContent = generateReportHTML();
+    const blob = new Blob([reportContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `CancerNet_Analysis_Report_${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Function to share results via Web Share API or clipboard
+  const shareResults = async (event) => {
+    if (!results) return;
+    
+    const shareData = {
+      title: 'CancerNet AI Analysis Results',
+      text: generateShareText(),
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(shareData.text);
+        // Show temporary success message
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = `
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+          </svg>
+          <span>Copied to Clipboard!</span>
+        `;
+        setTimeout(() => {
+          button.innerHTML = originalText;
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error sharing results:', error);
+      // Show error message
+      const button = event.target.closest('button');
+      const originalText = button.innerHTML;
+      button.innerHTML = '<span>Share Failed</span>';
+      setTimeout(() => {
+        button.innerHTML = originalText;
+      }, 2000);
+    }
+  };
+
+  // Generate comprehensive HTML report
+  const generateReportHTML = () => {
+    const currentDate = new Date().toLocaleDateString();
+    const currentTime = new Date().toLocaleTimeString();
+    
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CancerNet AI Analysis Report</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+          .header { text-align: center; border-bottom: 3px solid #3b82f6; padding-bottom: 20px; margin-bottom: 30px; }
+          .logo { font-size: 28px; font-weight: bold; color: #3b82f6; margin-bottom: 5px; }
+          .subtitle { color: #6b7280; font-size: 16px; }
+          .report-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+          .info-box { padding: 15px; background: #f3f4f6; border-radius: 8px; }
+          .info-label { font-weight: bold; color: #374151; margin-bottom: 5px; }
+          .info-value { color: #6b7280; }
+          .main-result { text-align: center; padding: 25px; border-radius: 10px; margin-bottom: 30px; color: white; }
+          .result-high { background: linear-gradient(135deg, #ef4444, #dc2626); }
+          .result-medium { background: linear-gradient(135deg, #f59e0b, #d97706); }
+          .result-low { background: linear-gradient(135deg, #10b981, #059669); }
+          .result-normal { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+          .result-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+          .result-subtitle { font-size: 18px; opacity: 0.9; }
+          .confidence-score { font-size: 36px; font-weight: bold; margin: 15px 0; }
+          .detections-section { margin-bottom: 30px; }
+          .section-title { font-size: 20px; font-weight: bold; color: #374151; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid #e5e7eb; }
+          .detection-item { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+          .detection-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+          .detection-number { background: #ef4444; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+          .detection-confidence { font-size: 18px; font-weight: bold; color: #ef4444; }
+          .detection-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+          .detail-item { background: white; padding: 8px 12px; border-radius: 6px; }
+          .detail-label { font-size: 12px; color: #6b7280; text-transform: uppercase; }
+          .detail-value { font-weight: bold; color: #374151; }
+          .technical-specs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+          .spec-box { text-align: center; padding: 20px; background: #f9fafb; border-radius: 8px; }
+          .spec-value { font-size: 24px; font-weight: bold; color: #3b82f6; }
+          .spec-label { color: #6b7280; margin-top: 5px; }
+          .findings-section { margin-bottom: 30px; }
+          .finding-item { background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin-bottom: 10px; }
+          .recommendations-section { margin-bottom: 30px; }
+          .recommendation-item { background: #fefce8; border-left: 4px solid #eab308; padding: 12px 16px; margin-bottom: 10px; }
+          .disclaimer { background: #f3f4f6; padding: 20px; border-radius: 8px; margin-top: 30px; border: 1px solid #d1d5db; }
+          .disclaimer-title { font-weight: bold; color: #374151; margin-bottom: 10px; }
+          .disclaimer-text { color: #6b7280; line-height: 1.6; }
+          .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">🧠 CancerNet AI</div>
+            <div class="subtitle">Advanced Medical Imaging Analysis Report</div>
+          </div>
+
+          <div class="report-info">
+            <div class="info-box">
+              <div class="info-label">Report Generated</div>
+              <div class="info-value">${currentDate} at ${currentTime}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Analysis Type</div>
+              <div class="info-value">Chest X-ray Cancer Detection</div>
+            </div>
+          </div>
+
+          <div class="main-result ${results.risk_level === 'High' ? 'result-high' : results.risk_level === 'Medium' ? 'result-medium' : results.risk_level === 'Low' ? 'result-low' : 'result-normal'}">
+            <div class="result-title">${results.prediction}</div>
+            <div class="result-subtitle">Risk Level: ${results.risk_level}</div>
+            <div class="confidence-score">${results.confidence}%</div>
+            <div>Analysis Confidence</div>
+          </div>
+
+          <div class="technical-specs">
+            <div class="spec-box">
+              <div class="spec-value">${results.detection_count || 0}</div>
+              <div class="spec-label">Total Detections</div>
+            </div>
+            <div class="spec-box">
+              <div class="spec-value">${results.processing_time}</div>
+              <div class="spec-label">Processing Time</div>
+            </div>
+            <div class="spec-box">
+              <div class="spec-value">${results.accuracy_rating}</div>
+              <div class="spec-label">Model Accuracy</div>
+            </div>
+          </div>
+
+          ${results.cancer_locations && results.cancer_locations.length > 0 ? `
+          <div class="detections-section">
+            <div class="section-title">🎯 Detected Locations</div>
+            ${results.cancer_locations.map((location, index) => `
+              <div class="detection-item">
+                <div class="detection-header">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="detection-number">${index + 1}</div>
+                    <div>
+                      <div style="font-weight: bold; color: #ef4444;">${location.type}</div>
+                      <div style="color: #6b7280; font-size: 14px;">Coordinates: (${location.x}, ${location.y})</div>
+                    </div>
+                  </div>
+                  <div class="detection-confidence">${Math.round(location.confidence * 100)}%</div>
+                </div>
+                <div class="detection-details">
+                  <div class="detail-item">
+                    <div class="detail-label">Dimensions</div>
+                    <div class="detail-value">${location.width}×${location.height}px</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Area</div>
+                    <div class="detail-value">${location.area}px²</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Shape</div>
+                    <div class="detail-value">${location.circularity > 0.8 ? 'Circular' : location.circularity > 0.6 ? 'Oval' : 'Irregular'}</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Priority</div>
+                    <div class="detail-value">${location.confidence > 0.8 ? 'Urgent' : location.confidence > 0.65 ? 'High' : 'Monitor'}</div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ` : `
+          <div class="detections-section">
+            <div class="section-title">✅ Analysis Summary</div>
+            <div style="text-align: center; padding: 30px; background: #f0fdf4; border-radius: 10px; border: 1px solid #bbf7d0;">
+              <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
+              <div style="font-size: 20px; font-weight: bold; color: #166534; margin-bottom: 10px;">No Abnormalities Detected</div>
+              <div style="color: #166534;">The AI analysis found no suspicious areas in this chest X-ray. The lung fields appear clear and normal.</div>
+            </div>
+          </div>
+          `}
+
+          ${results.findings && results.findings.length > 0 ? `
+          <div class="findings-section">
+            <div class="section-title">🔍 Medical Findings</div>
+            ${results.findings.map(finding => `
+              <div class="finding-item">${finding}</div>
+            `).join('')}
+          </div>
+          ` : ''}
+
+          ${results.recommendations && results.recommendations.length > 0 ? `
+          <div class="recommendations-section">
+            <div class="section-title">💡 Recommendations</div>
+            ${results.recommendations.map(rec => `
+              <div class="recommendation-item">${rec}</div>
+            `).join('')}
+          </div>
+          ` : ''}
+
+          <div class="disclaimer">
+            <div class="disclaimer-title">⚠️ Medical Disclaimer</div>
+            <div class="disclaimer-text">
+              This AI system is designed to assist healthcare professionals and is not intended for self-diagnosis. 
+              Always consult with qualified medical practitioners for proper diagnosis and treatment. 
+              Results should be interpreted by licensed radiologists in conjunction with clinical findings and patient history.
+            </div>
+          </div>
+
+          <div class="footer">
+            <div>Generated by CancerNet AI • Model Version: ${results.model_version}</div>
+            <div style="margin-top: 5px;">This report is confidential and intended for medical professionals only</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
+  // Generate text for sharing
+  const generateShareText = () => {
+    const hasDetections = results.cancer_locations && results.cancer_locations.length > 0;
+    
+    return `🧠 CancerNet AI Analysis Results
+
+📊 SUMMARY:
+• Prediction: ${results.prediction}
+• Risk Level: ${results.risk_level}
+• Confidence: ${results.confidence}%
+• Detections: ${results.detection_count || 0}
+
+⚡ TECHNICAL DETAILS:
+• Processing Time: ${results.processing_time}
+• Model Accuracy: ${results.accuracy_rating}
+• Model Version: ${results.model_version}
+
+${hasDetections ? `
+🎯 DETECTED AREAS:
+${results.cancer_locations.map((loc, i) => `${i+1}. ${loc.type} - ${Math.round(loc.confidence * 100)}% confidence at (${loc.x}, ${loc.y})`).join('\n')}
+` : `
+✅ NORMAL RESULTS:
+No suspicious areas detected - lung fields appear clear and normal.
+`}
+
+⚠️ MEDICAL DISCLAIMER:
+This AI analysis is for healthcare professional use only. Always consult qualified medical practitioners for proper diagnosis and treatment.
+
+Generated: ${new Date().toLocaleString()}
+🔒 Confidential Medical Information`;
+  };
+
   const renderMainResult = () => {
     if (!results) return null;
     
@@ -147,7 +409,6 @@ const ProfessionalCancerDetectionApp = () => {
         <div className="text-2xl font-bold mb-2">{results.prediction}</div>
         <div className="text-lg opacity-90">Risk Level: {results.risk_level}</div>
         
-        {/* Detection summary */}
         <div className="mt-4 grid grid-cols-3 gap-4">
           <div className="text-center p-3 bg-black/20 rounded-lg">
             <div className="text-xl font-bold">{results.detection_count}</div>
@@ -178,7 +439,6 @@ const ProfessionalCancerDetectionApp = () => {
     );
   };
 
-  // Update the annotated image section to handle cases with no detections
   const renderAnnotatedImage = () => {
     if (!results) return null;
     
@@ -269,7 +529,6 @@ const ProfessionalCancerDetectionApp = () => {
     );
   };
 
-  // Update the detailed detection section to show more realistic information
   const renderDetectionDetails = () => {
     if (!results || !results.cancer_locations || results.cancer_locations.length === 0) {
       return null;
@@ -515,12 +774,12 @@ const ProfessionalCancerDetectionApp = () => {
                     {loading ? (
                       <>
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        <span>Analyzing IT</span>
+                        <span>Analyzing Image</span>
                       </>
                     ) : (
                       <>
                         <Zap className="w-6 h-6" />
-                        <span>Analyze IT</span>
+                        <span>Analyze Image</span>
                         <ArrowRight className="w-5 h-5" />
                       </>
                     )}
@@ -652,11 +911,17 @@ const ProfessionalCancerDetectionApp = () => {
 
                 {/* Action Buttons */}
                 <div className="flex space-x-4">
-                  <button className="flex-1 flex items-center justify-center space-x-2 py-3 px-6 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all duration-300">
+                  <button 
+                    onClick={downloadReport}
+                    className="flex-1 flex items-center justify-center space-x-2 py-3 px-6 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all duration-300 transform hover:scale-105"
+                  >
                     <Download className="w-5 h-5" />
                     <span>Download Report</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center space-x-2 py-3 px-6 bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300">
+                  <button 
+                    onClick={shareResults}
+                    className="flex-1 flex items-center justify-center space-x-2 py-3 px-6 bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300 transform hover:scale-105"
+                  >
                     <Share2 className="w-5 h-5" />
                     <span>Share Results</span>
                   </button>
