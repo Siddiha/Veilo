@@ -35,7 +35,7 @@ HTTP Client: Native Fetch API with timeout support
 
 State Management: React useState and useEffect hooks
 
-Backend (Server-Side)
+##Backend (Server-Side)
 Framework: Flask with CORS support
 
 Image Processing: OpenCV, Pillow (PIL)
