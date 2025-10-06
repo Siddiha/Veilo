@@ -1,0 +1,12 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.6.1
+Pillow==10.4.0
+python-multipart==0.0.9
+reportlab==4.2.5
+numpy==2.1.1
+torch==2.4.1; platform_system != 'Windows' or platform_machine != 'x86'
+torch==2.3.1+cpu; platform_system == 'Windows' and platform_machine == 'x86'
+torchvision==0.18.1
+

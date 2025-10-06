@@ -1,0 +1,8 @@
+server:
+  host: 0.0.0.0
+  port: 8000
+
+cors:
+  allow_origins: ["*"]
+  allow_methods: ["*"]
+  allow_headers: ["*"]

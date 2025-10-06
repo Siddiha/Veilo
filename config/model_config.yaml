@@ -1,0 +1,3 @@
+model:
+  path: backend/models/trained_models/lung_cancer_model.pth
+  preprocess: backend/models/trained_models/preprocessing.pkl

@@ -1,0 +1,14 @@
+training:
+  epochs: 20
+  batch_size: 16
+  learning_rate: 0.0001
+  optimizer: adam
+
+data:
+  train_dir: ../../datasets/processed_images/train
+  val_dir: ../../datasets/processed_images/val
+  test_dir: ../../datasets/processed_images/test
+
+model:
+  architecture: resnet18
+  input_size: 512

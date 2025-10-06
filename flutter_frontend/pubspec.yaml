@@ -1,0 +1,23 @@
+name: veilo_lung_cancer
+description: Veilo Lung Cancer Detector Flutter app
+publish_to: "none"
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  image_picker: ^1.1.2
+  provider: ^6.1.2
+  path_provider: ^2.1.4
+  printing: ^5.13.3
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/fonts/
