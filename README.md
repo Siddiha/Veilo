@@ -1,4 +1,4 @@
-# 🫁 AI-Powered Lung Cancer Detection app
+# 🫁 VEILO
 
 This repository contains a full-stack AI application for chest X-ray analysis:
 
