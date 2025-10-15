@@ -1,5 +1,5 @@
  # VEILO
- ![WhatsApp Image 2025-10-05 at 08 52 20_accabccb](https://github.com/user-attachments/assets/c9725d49-94d3-4cd1-8bee-f3533ae6d1fc)
+<img width="1317" height="870" alt="Image" src="https://github.com/user-attachments/assets/4cf0ad5a-c9e3-447a-8bc6-fa0ea2fcd3e9" />
 
 
 This repository contains a full-stack AI application for chest X-ray analysis:
