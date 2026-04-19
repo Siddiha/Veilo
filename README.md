@@ -22,7 +22,7 @@ Professional Reporting: Generate detailed medical reports with findings and reco
 
 HIPAA Compliant: Secure handling of medical imaging data.
 
-Real-time Processing: Results in seconds with visual progress indicators
+Real-time Processing: Results in seconds with visual progress indicators.
 
 Interactive UI: Modern, responsive interface designed for medical professionals
 
