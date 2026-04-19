@@ -111,4 +111,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 🤝 Contributing
 We welcome contributions from the medical and technical communities. Please read our contributing guidelines before submitting pull requests.
 
-Siddiha
