@@ -10,17 +10,11 @@ This repository contains a full-stack AI application for chest X-ray analysis:
 
 # ✨ Features
 AI-Powered Analysis: Advanced computer vision algorithms detect suspicious pulmonary nodules and masses.
-
 Visual Annotations: Precise location detection with visual markers, arrows, and labels.
-
 Multi-Method Detection: Combines circle detection and contour analysis for comprehensive coverage.
-
 Professional Reporting: Generate detailed medical reports with findings and recommendations.
-
 HIPAA Compliant: Secure handling of medical imaging data.
-
 Real-time Processing: Results in seconds with visual progress indicators.
-
 Interactive UI: Modern, responsive interface designed for medical professionals.
 
 #  🏗️ System Architecture
