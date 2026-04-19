@@ -20,7 +20,7 @@ Multi-Method Detection: Combines circle detection and contour analysis for compr
 
 Professional Reporting: Generate detailed medical reports with findings and recommendations.
 
-HIPAA Compliant: Secure handling of medical imaging data
+HIPAA Compliant: Secure handling of medical imaging data.
 
 Real-time Processing: Results in seconds with visual progress indicators
 
