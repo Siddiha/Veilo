@@ -95,11 +95,8 @@ All processing occurs on-premises
 🛠️ Development
 Adding New Detection Algorithms
 Extend the ImprovedCancerDetectionModel class
-
 Implement new detection methods
-
 Add to the multi-method analysis pipeline
-
 Update confidence scoring algorithm
 
 Customizing Reports
