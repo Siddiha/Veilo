@@ -24,7 +24,7 @@ HIPAA Compliant: Secure handling of medical imaging data.
 
 Real-time Processing: Results in seconds with visual progress indicators.
 
-Interactive UI: Modern, responsive interface designed for medical professionals
+Interactive UI: Modern, responsive interface designed for medical professionals.
 
 #  🏗️ System Architecture
 Frontend (Client-Side)
