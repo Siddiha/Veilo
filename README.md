@@ -85,11 +85,8 @@ This AI system is designed to assist healthcare professionals and is not intende
 
 🔒 Security & Compliance
 HIPAA-compliant data handling
-
 Secure image transmission
-
 No persistent storage of patient data
-
 All processing occurs on-premises
 
 🛠️ Development
