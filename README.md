@@ -16,7 +16,7 @@ AI-Powered Analysis: Advanced computer vision algorithms detect suspicious pulmo
 
 Visual Annotations: Precise location detection with visual markers, arrows, and labels.
 
-Multi-Method Detection: Combines circle detection and contour analysis for comprehensive coverage
+Multi-Method Detection: Combines circle detection and contour analysis for comprehensive coverage.
 
 Professional Reporting: Generate detailed medical reports with findings and recommendations
 
