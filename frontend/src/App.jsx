@@ -388,6 +388,134 @@ Generated: ${new Date().toLocaleString()}
 🔒 Confidential Medical Information`;
   };
 
+  // New function: Render confidence distribution visualization
+  const renderConfidenceDistribution = () => {
+    if (!results || !results.cancer_locations || results.cancer_locations.length === 0) {
+      return null;
+    }
+
+    // Group detections by confidence ranges
+    const confidenceRanges = {
+      critical: results.cancer_locations.filter(l => l.confidence > 0.85).length,
+      high: results.cancer_locations.filter(l => l.confidence >= 0.7 && l.confidence <= 0.85).length,
+      moderate: results.cancer_locations.filter(l => l.confidence >= 0.5 && l.confidence < 0.7).length,
+      low: results.cancer_locations.filter(l => l.confidence < 0.5).length
+    };
+
+    const total = results.cancer_locations.length;
+
+    return (
+      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50">
+        <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+          <TrendingUp className="w-5 h-5 text-purple-400" />
+          <span>Confidence Distribution</span>
+        </h3>
+        
+        <div className="space-y-4">
+          {/* Confidence Bars */}
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-red-400">Critical (85%+)</span>
+                <span className="text-gray-400">{confidenceRanges.critical} detection{confidenceRanges.critical !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-1000"
+                  style={{ width: `${(confidenceRanges.critical / total) * 100}%` }}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-orange-400">High (70-85%)</span>
+                <span className="text-gray-400">{confidenceRanges.high} detection{confidenceRanges.high !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all duration-1000"
+                  style={{ width: `${(confidenceRanges.high / total) * 100}%` }}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-yellow-400">Moderate (50-70%)</span>
+                <span className="text-gray-400">{confidenceRanges.moderate} detection{confidenceRanges.moderate !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-1000"
+                  style={{ width: `${(confidenceRanges.moderate / total) * 100}%` }}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-400">Low ({'<50%'})</span>
+                <span className="text-gray-400">{confidenceRanges.low} detection{confidenceRanges.low !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-gray-500 to-gray-600 rounded-full transition-all duration-1000"
+                  style={{ width: `${(confidenceRanges.low / total) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="p-3 bg-gray-700/30 rounded-lg text-center">
+              <div className="text-2xl font-bold text-purple-400">
+                {((confidenceRanges.critical + confidenceRanges.high) / total * 100).toFixed(1)}%
+              </div>
+              <div className="text-xs text-gray-400">High Confidence</div>
+            </div>
+            <div className="p-3 bg-gray-700/30 rounded-lg text-center">
+              <div className="text-2xl font-bold text-blue-400">
+                {(results.cancer_locations.reduce((sum, loc) => sum + loc.confidence, 0) / total * 100).toFixed(1)}%
+              </div>
+              <div className="text-xs text-gray-400">Average Confidence</div>
+            </div>
+          </div>
+
+          {/* Heat Map Legend */}
+          <div className="mt-4 p-3 bg-gray-700/30 rounded-lg">
+            <div className="text-sm text-gray-300 mb-2">Detection Confidence Heat Map:</div>
+            <div className="h-6 rounded-lg bg-gradient-to-r from-gray-500 via-yellow-500 to-red-500" />
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>Low</span>
+              <span>Moderate</span>
+              <span>High</span>
+              <span>Critical</span>
+            </div>
+          </div>
+
+          {/* Clinical Insight */}
+          <div className="mt-3 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+            <div className="flex items-start space-x-2">
+              <Activity className="w-4 h-4 text-blue-400 mt-0.5" />
+              <div className="text-xs text-blue-100">
+                <strong className="block mb-1">Clinical Insight:</strong>
+                {confidenceRanges.critical > 0 ? (
+                  <span>{confidenceRanges.critical} area{confidenceRanges.critical > 1 ? 's' : ''} with critical confidence require{confidenceRanges.critical === 1 ? 's' : ''} immediate attention. Prioritize evaluation of high-confidence detections first.</span>
+                ) : confidenceRanges.high > 0 ? (
+                  <span>{confidenceRanges.high} high-confidence area{confidenceRanges.high > 1 ? 's' : ''} detected. Schedule follow-up examination within 24-48 hours.</span>
+                ) : (
+                  <span>No high-confidence detections. Monitor low-confidence areas with regular follow-up scans.</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderMainResult = () => {
     if (!results) return null;
     
@@ -856,6 +984,9 @@ Generated: ${new Date().toLocaleString()}
 
                 {/* Cancer Locations Detail */}
                 {renderDetectionDetails()}
+
+                {/* NEW: Confidence Distribution Visualization */}
+                {renderConfidenceDistribution()}
 
                 {/* Technical Details */}
                 <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50">
