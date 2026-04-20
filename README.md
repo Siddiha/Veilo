@@ -25,7 +25,7 @@ Styling: Tailwind CSS with custom animations
 
 Icons: Lucide React icon library
 
-HTTP Client: Native Fetch API with timeout support
+HTTP Client: Native Fetch API with timeout support.
 
 State Management: React useState and useEffect hooks
 
