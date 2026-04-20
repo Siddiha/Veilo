@@ -23,7 +23,7 @@ Framework: React 18+ with Hooks
 
 Styling: Tailwind CSS with custom animations
 
-Icons: Lucide React icon library
+Icons: Lucide React icon library.
 
 HTTP Client: Native Fetch API with timeout support.
 
