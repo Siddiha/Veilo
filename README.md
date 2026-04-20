@@ -30,7 +30,7 @@ HTTP Client: Native Fetch API with timeout support
 State Management: React useState and useEffect hooks
 
 # 🎯 How It Works
-Image Upload: Users upload chest X-ray or CT scan images
+Image Upload: Users upload chest X-ray or CT scan images.
 
 Preprocessing: Images are enhanced using CLAHE and bilateral filtering
 
