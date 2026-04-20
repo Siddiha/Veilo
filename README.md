@@ -27,7 +27,7 @@ Icons: Lucide React icon library
 
 HTTP Client: Native Fetch API with timeout support.
 
-State Management: React useState and useEffect hooks
+State Management: React useState and useEffect hooks.
 
 # 🎯 How It Works
 Image Upload: Users upload chest X-ray or CT scan images.
